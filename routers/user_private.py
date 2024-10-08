@@ -22,8 +22,8 @@ async def start_message(msg: types.Message):
         )
     else:
         await msg.answer(
-            f'<b>У вас нет доступа к боту. Ваш ID: {msg.from_user.id}</b>',
-            parse_mode='html'
+            f'У вас нет доступа к боту. Ваш ID: `{user_id}`',
+            parse_mode='MARKDOWN'
         )
 
 
