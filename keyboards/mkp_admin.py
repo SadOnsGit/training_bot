@@ -2,7 +2,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 mkp_panel = InlineKeyboardMarkup(inline_keyboard=[
     [
-        InlineKeyboardButton(text='📈 Управление курсами',
+        InlineKeyboardButton(text='📈 Управление уроками',
                              callback_data='admin.setcourse')
     ],
     [
@@ -26,11 +26,11 @@ mkp_panel = InlineKeyboardMarkup(inline_keyboard=[
 
 course_panel = InlineKeyboardMarkup(inline_keyboard=[
     [
-        InlineKeyboardButton(text='📚 Добавить курс',
+        InlineKeyboardButton(text='📚 Добавить урок',
                              callback_data='course.add')
     ],
     [
-        InlineKeyboardButton(text='🗑️ Удалить курс',
+        InlineKeyboardButton(text='🗑️ Удалить урок',
                              callback_data='course.delete')
     ],
 ])

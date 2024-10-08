@@ -23,7 +23,7 @@ cb_adminpanel = Router()
 @cb_adminpanel.callback_query(F.data.startswith('admin.'))
 async def admin_panel(call: CallbackQuery, state: FSMContext):
     if call.data == 'admin.setcourse':
-        await call.message.edit_text(f'<b>📚 Управление курсами: </b>', parse_mode='html', reply_markup=course_panel)
+        await call.message.edit_text(f'<b>📚 Управление уроками: </b>', parse_mode='html', reply_markup=course_panel)
     elif call.data == 'admin.setweb':
         await call.message.edit_text(f'<b>🎥 Управление вебинарами: </b>', parse_mode='html', reply_markup=webinar_panel)
     elif call.data == 'admin.setguide':

@@ -62,14 +62,14 @@ async def delete_lesson(message: Message, state: FSMContext):
 async def course_changes(call: CallbackQuery, state: FSMContext):
     if call.data == 'course.add':
         await call.message.edit_text(
-            '<b>Добавление курса. Введите название: </b>',
+            '<b>Добавление урока. Введите название: </b>',
             parse_mode='html',
             reply_markup=mkp_cancel
         )
         await state.set_state(SetCourse.title)
     elif call.data == 'course.delete':
         await call.message.edit_text(
-            '<b>Удаление курса. Введите название: </b>',
+            '<b>Удаление урока. Введите название: </b>',
             parse_mode='html',
             reply_markup=mkp_cancel
         )
@@ -81,7 +81,7 @@ async def setcoursetitle(message: Message, state: FSMContext):
     title = message.text
     await state.update_data(title=title)
     await message.answer(
-        f'<b>Название курса: {title}. Введите текст курса: </b>',
+        f'<b>Название урока: {title}. Введите текст урока: </b>',
         parse_mode='html',
         reply_markup=mkp_cancel)
     await state.set_state(SetCourse.text)
@@ -93,7 +93,7 @@ async def setcoursetext(message: Message, state: FSMContext):
     await state.update_data(text=text)
     lesson_data = await state.get_data()
     await course.add_lesson(lesson_data.get('title'), lesson_data.get('text'))
-    await message.answer('<b>✅ Курс был успешно добавлен.</b>', parse_mode='html')
+    await message.answer('<b>✅ Урок был успешно добавлен.</b>', parse_mode='html')
     await state.clear()
 
 
