@@ -29,29 +29,35 @@ async def start_message(msg: types.Message):
 
 @router_start.message(lambda message: message.text == '📚 УРОКИ')
 async def handle_lessons(message: types.Message):
-    keyboard = await create_lesson_keyboard()
-    await message.answer(
-        "<b>Список доступных вам уроков.</b>",
-        parse_mode='html',
-        reply_markup=keyboard
-    )
+    user_id = message.from_user.id
+    if await user.user_access_exists(user_id):
+        keyboard = await create_lesson_keyboard()
+        await message.answer(
+            "<b>Список доступных вам уроков.</b>",
+            parse_mode='html',
+            reply_markup=keyboard
+        )
 
 
 @router_start.message(lambda message: message.text == '💻 ВЕБИНАРЫ')
 async def handle_webinars(message: types.Message):
-    keyboard = await create_web_keyboard()
-    await message.answer(
-        "<b>Список доступных вам вебинаров.</b>",
-        parse_mode='html',
-        reply_markup=keyboard
-    )
+    user_id = message.from_user.id
+    if await user.user_access_exists(user_id):
+        keyboard = await create_web_keyboard()
+        await message.answer(
+            "<b>Список доступных вам вебинаров.</b>",
+            parse_mode='html',
+            reply_markup=keyboard
+        )
 
 
 @router_start.message(lambda message: message.text == '📝 ГАЙДЫ')
 async def handle_guides(message: types.Message):
-    keyboard = await create_guide_keyboard()
-    await message.answer(
-        "<b>Список доступных вам гайдов.</b>",
-        parse_mode='html',
-        reply_markup=keyboard
-    )
+    user_id = message.from_user.id
+    if await user.user_access_exists(user_id):
+        keyboard = await create_guide_keyboard()
+        await message.answer(
+            "<b>Список доступных вам гайдов.</b>",
+            parse_mode='html',
+            reply_markup=keyboard
+        )
