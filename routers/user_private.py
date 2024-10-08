@@ -16,7 +16,7 @@ async def start_message(msg: types.Message):
     user_id = msg.from_user.id
     if await user.user_access_exists(user_id):
         await msg.answer(
-            f'<b>Главное меню курсов, {msg.from_user.full_name}!</b>',
+            f'<b>Главное меню, {msg.from_user.full_name}!</b>',
             parse_mode='html',
             reply_markup=mkp_main
         )
