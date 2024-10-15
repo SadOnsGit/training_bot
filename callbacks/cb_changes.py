@@ -5,6 +5,7 @@ from aiogram.fsm.state import State, StatesGroup
 
 from db import course, web, guide
 from keyboards.mkp_cancel import mkp_cancel
+import os
 
 cb_changes = Router()
 
@@ -17,11 +18,13 @@ class SetCourse(StatesGroup):
 class SetWebinar(StatesGroup):
     title = State()
     text = State()
+    file = State()
 
 
 class SetGuide(StatesGroup):
     title = State()
     text = State()
+    file = State()
 
 
 class SetAdmin(StatesGroup):
@@ -145,8 +148,30 @@ async def setwebtitle(message: Message, state: FSMContext):
 async def setwebtext(message: Message, state: FSMContext):
     text = message.text
     await state.update_data(text=text)
-    web_data = await state.get_data()
-    await web.add_webinar(web_data.get('title'), web_data.get('text'))
+    await message.answer(
+        '<b>Отправьте файл, который будет прикреплён к вебинару.'
+        '\nВ случае если файл не предусмотрен, напишите любой текст</b>',
+        parse_mode='html'
+    )
+    await state.set_state(SetWebinar.file)
+
+
+@cb_changes.message(SetWebinar.file)
+async def setwebfile(message: Message, state: FSMContext):
+    directory = 'webinars'
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    if message.document:
+        file_id = message.document.file_id
+        file_name = message.document.file_name
+        file_path = await message.bot.get_file(file_id)
+        await message.bot.download_file(file_path.file_path, f'{directory}/{file_name}')
+        await state.update_data(file_path=f'{directory}/{file_name}')
+        web_data = await state.get_data()
+        await web.add_webinar(web_data.get('title'), web_data.get('text'), web_data.get('file_path'))
+    else:
+        web_data = await state.get_data()
+        await web.add_webinar(web_data.get('title'), web_data.get('text'), None)
     await message.answer('<b>✅ Вебинар был успешно добавлен.</b>', parse_mode='html')
     await state.clear()
 
@@ -199,7 +224,29 @@ async def setguidetitle(message: Message, state: FSMContext):
 async def setguidetext(message: Message, state: FSMContext):
     text = message.text
     await state.update_data(text=text)
-    guide_data = await state.get_data()
-    await guide.add_guide(guide_data.get('title'), guide_data.get('text'))
-    await message.answer('<b>✅ Гайд был успешно добавлен.</b>', parse_mode='html')
+    await message.answer(
+        '<b>Отправьте файл, который будет прикреплён к гайду.'
+        '\nВ случае если файл не предусмотрен, напишите любой текст</b>',
+        parse_mode='html'
+    )
+    await state.set_state(SetGuide.file)
+
+@cb_changes.message(SetGuide.file)
+async def setguidefile(message: Message, state: FSMContext):
+    directory = 'guides'
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    if message.document:
+        file_id = message.document.file_id
+        file_name = message.document.file_name
+        file_path = await message.bot.get_file(file_id)
+        await message.bot.download_file(file_path.file_path, f'{directory}/{file_name}')
+        await state.update_data(file_path=f'{directory}/{file_name}')
+        guide_data = await state.get_data()
+        await guide.add_guide(guide_data.get('title'), guide_data.get('text'), guide_data.get('file_path'))
+        await message.answer('<b>✅ Гайд был успешно добавлен.</b>', parse_mode='html')
+    else:
+        guide_data = await state.get_data()
+        await guide.add_guide(guide_data.get('title'), guide_data.get('text'), None)
+        await message.answer('<b>✅ Гайд был успешно добавлен.</b>', parse_mode='html')
     await state.clear()

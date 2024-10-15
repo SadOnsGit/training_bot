@@ -19,19 +19,22 @@ class User:
                 CREATE TABLE IF NOT EXISTS learns (
                     id_learn INTEGER PRIMARY KEY AUTOINCREMENT,
                     lesson_title TEXT NOT NULL,
-                    lesson_text TEXT NOT NULL
+                    lesson_text TEXT NOT NULL,
+                    file_path TEXT
                 );
 
                 CREATE TABLE IF NOT EXISTS webinars (
                     id_webinar INTEGER PRIMARY KEY AUTOINCREMENT,
                     webinar_title TEXT NOT NULL,
-                    webinar_description TEXT NOT NULL
+                    webinar_description TEXT NOT NULL,
+                    file_path TEXT
                 );
 
                 CREATE TABLE IF NOT EXISTS guides (
                     id_guide INTEGER PRIMARY KEY AUTOINCREMENT,
                     guide_title TEXT NOT NULL,
-                    guide_content TEXT NOT NULL
+                    guide_content TEXT NOT NULL,
+                    file_path TEXT
                 );
             ''')
             await conn.commit()
@@ -63,11 +66,14 @@ class Webinar:
     """Класс управления вебинарами."""
 
     @staticmethod
-    async def add_webinar(webinar_title: str, webinar_description: str):
+    async def add_webinar(webinar_title: str, webinar_description: str, file_path):
         """Добавить новый вебинар в таблицу."""
         async with aiosqlite.connect(DATABASE) as conn:
             try:
-                await conn.execute('INSERT INTO webinars (webinar_title, webinar_description) VALUES (?, ?)', (webinar_title, webinar_description))
+                await conn.execute(
+                    'INSERT INTO webinars (webinar_title, webinar_description, file_path) VALUES (?, ?, ?)',
+                    (webinar_title, webinar_description, file_path)
+                )
                 await conn.commit()
             except Exception as e:
                 print(f"Error adding webinar: {e}")
@@ -99,9 +105,12 @@ class Webinar:
         """Получить вебинар по ID."""
         async with aiosqlite.connect(DATABASE) as conn:
             try:
-                async with conn.execute('SELECT webinar_description FROM webinars WHERE id_webinar = ?', (webinar_id,)) as cursor:
+                async with conn.execute('SELECT webinar_description, file_path FROM webinars WHERE id_webinar = ?', (webinar_id,)) as cursor:
                     webinar = await cursor.fetchone()
-                return webinar[0] if webinar else None
+                return {
+                    'webinar_description': webinar[0],
+                    'file_path': webinar[1]
+                } if webinar else None
             except Exception as e:
                 print(f"Error fetching webinar by ID: {e}")
                 return None
@@ -159,11 +168,14 @@ class Guide:
     """Класс управления гайдами."""
 
     @staticmethod
-    async def add_guide(guide_title: str, guide_content: str):
+    async def add_guide(guide_title: str, guide_content: str, file_path):
         """Добавить новый гайд в таблицу."""
         async with aiosqlite.connect(DATABASE) as conn:
             try:
-                await conn.execute('INSERT INTO guides (guide_title, guide_content) VALUES (?, ?)', (guide_title, guide_content))
+                await conn.execute(
+                    'INSERT INTO guides (guide_title, guide_content, file_path) VALUES (?, ?, ?)',
+                    (guide_title, guide_content, file_path)
+                )
                 await conn.commit()
             except Exception as e:
                 print(f"Error adding guide: {e}")
@@ -195,9 +207,12 @@ class Guide:
         """Получить гайд по ID."""
         async with aiosqlite.connect(DATABASE) as conn:
             try:
-                async with conn.execute('SELECT guide_content FROM guides WHERE id_guide = ?', (guide_id,)) as cursor:
+                async with conn.execute('SELECT guide_content, file_path FROM guides WHERE id_guide = ?', (guide_id,)) as cursor:
                     guide = await cursor.fetchone()
-                return guide[0] if guide else None
+                return {
+                    'guide_content': guide[0] if guide else None,
+                    'file_path': guide[1] if guide else None
+                }
             except Exception as e:
                 print(f"Error fetching guide by ID: {e}")
                 return None
